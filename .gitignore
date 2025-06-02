@@ -1,0 +1,8 @@
+*.json
+*.xml
+*.bak
+*.spec
+__pycache__/*
+build/
+dist/
+venv/

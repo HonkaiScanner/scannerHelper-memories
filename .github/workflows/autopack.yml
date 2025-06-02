@@ -1,0 +1,40 @@
+name: Auto Package Helper
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x86' # optional x64 or x86. Defaults to x64 if not specified
+
+      - name: Install Python lib
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Package to exe
+        run: pyinstaller --clean -Fw main.py --hidden-import=PyQt5.QtCore --collect-all pyzbar --add-data="templates;templates"
+
+      - name: Upload output
+        uses: actions/upload-artifact@v3
+        with:
+          name: helper-nocmd
+          path: dist/main.exe
+
+      - name: Package to exe (with CMD)
+        run: pyinstaller --clean -Fc main.py --hidden-import=PyQt5.QtCore --collect-all pyzbar --add-data="templates;templates"
+
+      - name: Upload output (with CMD)
+        uses: actions/upload-artifact@v3
+        with:
+          name: helper-cmd
+          path: dist/main.exe
